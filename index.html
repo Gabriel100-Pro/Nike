@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nike — Just Do It</title>
+  <meta name="description" content="Mais que um tênis. Um impulso para ir além." />
+
+  <!-- Fonts: Anton para o display condensado (substituto livre da Futura da Nike), Inter para texto -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <!-- marca que o JS está ativo: evita "flash" do conteúdo antes das animações -->
+  <script>document.documentElement.className += " js";</script>
+
+  <!-- Cursor customizado (desktop; ativado por JS) -->
+  <div class="cursor" aria-hidden="true">
+    <span class="cursor__ring"></span>
+    <span class="cursor__dot"></span>
+  </div>
+
+  <!-- ============================================================
+       NAVBAR
+       ============================================================ -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <!-- Logo -->
+      <a href="#" class="nav__logo" aria-label="Nike — página inicial">
+        <svg class="nav__swoosh" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M24 7.2c-4 5-9.2 9.3-15 9.3-2.7 0-4-1.7-4-4.3 0-2.4 1-5 2-7-2.7 2.4-6 6.7-6 10.3 0 3 2 5 5.3 5C12.6 20.5 19.3 14.5 24 7.2z"/>
+        </svg>
+      </a>
+
+      <!-- Links centralizados -->
+      <ul class="nav__links">
+        <li><a href="#">Masculino</a></li>
+        <li><a href="#">Feminino</a></li>
+        <li><a href="#">Lançamentos</a></li>
+        <li><a href="#">Coleções</a></li>
+      </ul>
+
+      <!-- Ícones à direita -->
+      <div class="nav__icons">
+        <button class="nav__icon" aria-label="Buscar">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><line x1="16.5" y1="16.5" x2="21" y2="21"/></svg>
+        </button>
+        <button class="nav__icon" aria-label="Sacola">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8h12l1 13H5L6 8z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+        </button>
+        <button class="nav__icon nav__toggle" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Menu mobile -->
+  <div class="nav__mobile" id="mobileMenu">
+    <ul>
+      <li><a href="#">Masculino</a></li>
+      <li><a href="#">Feminino</a></li>
+      <li><a href="#">Lançamentos</a></li>
+      <li><a href="#">Coleções</a></li>
+    </ul>
+  </div>
+
+
+  <!-- ============================================================
+       CAMADA DO TÊNIS (fora da Hero para atravessar as seções)
+
+       Estrutura em camadas — cada wrapper tem UM único dono,
+       evitando conflito de "transform":
+         .shoe-anchor   -> CSS: centraliza + perspectiva
+         .shoe-scroll   -> GSAP ScrollTrigger (movimento ligado ao scroll)
+         .shoe-parallax -> JS requestAnimationFrame (parallax do mouse)
+         .shoe-intro    -> GSAP timeline de entrada (load)
+         .shoe (img)    -> CSS: inclinação base da composição
+       ============================================================ -->
+  <div class="shoe-layer" aria-hidden="true">
+    <div class="shoe-anchor">
+      <div class="shoe-scroll">
+        <div class="shoe-parallax">
+          <div class="shoe-intro">
+            <img class="shoe" src="assets/tenis-hero.png" alt="" draggable="false" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================
+       HERO
+       ============================================================ -->
+  <header class="hero" id="hero">
+    <!-- Mídia de fundo (recortada aqui, não na Hero, p/ o parallax não vazar) -->
+    <div class="hero__media">
+      <div class="hero__bg" style="background-image:url('assets/fundo-hero.png')"></div>
+      <div class="hero__overlay"></div>
+      <span class="hero__watermark">2</span>
+    </div>
+
+    <!-- Conteúdo -->
+    <div class="hero__content">
+      <div class="container hero__grid">
+
+        <!-- Indicador lateral esquerdo -->
+        <div class="hero__index">
+          <span>01</span>
+          <span class="hero__index-line"></span>
+        </div>
+
+        <!-- Título + apoio + CTA -->
+        <div class="hero__main">
+          <h1 class="hero__title">
+            <span class="line"><span>Just</span></span>
+            <span class="line"><span>Do <em class="accent">It.</em></span></span>
+          </h1>
+
+          <p class="hero__desc">Mais que um tênis.<br />Um impulso para ir além.</p>
+
+          <div class="hero__cta">
+            <a href="#" class="hero__cta-link">Comprar agora</a>
+            <a href="#" class="hero__cta-btn" aria-label="Comprar agora" data-magnetic>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+            </a>
+          </div>
+        </div>
+
+        <!-- Paginação lateral direita -->
+        <ul class="hero__pagination">
+          <li class="is-active">01</li>
+          <li>02</li>
+          <li>03</li>
+          <li>04</li>
+        </ul>
+
+        <!-- Bloco "Assista ao filme" -->
+        <a href="#" class="hero__film">
+          <span class="hero__film-thumb" style="background-image:url('assets/fundo-hero.png')">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="9 7 18 12 9 17 9 7"/></svg>
+          </span>
+          <span class="hero__film-label">Assista<br />ao filme</span>
+        </a>
+
+        <!-- Indicador de rolagem -->
+        <div class="hero__scroll" aria-hidden="true">
+          <span>Scroll</span>
+          <span class="hero__scroll-line"></span>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+
+  <!-- ============================================================
+       SEÇÃO 2 — PERFORMANCE (alvo da transição do tênis)
+       ============================================================ -->
+  <section class="performance" id="performance">
+    <div class="container performance__grid">
+      <span class="performance__index" data-reveal="left">02</span>
+
+      <!-- Espaço reservado (coluna esquerda): o tênis da Hero pousa exatamente aqui
+           ao final da transição de scroll. Sem conteúdo visível — só geometria. -->
+      <div class="performance__shoe-slot" aria-hidden="true"></div>
+
+      <div class="performance__inner">
+        <p class="performance__eyebrow" data-reveal="right" data-reveal-delay="0.1">Feito para performance</p>
+        <h2 class="performance__title" data-reveal="up" data-reveal-delay="0.18">Supere<br />seus limites.</h2>
+        <p class="performance__text" data-reveal="right" data-reveal-delay="0.28">
+          Tecnologia de ponta para quem vive em movimento. Leveza,
+          amortecimento e retorno de energia a cada passo.
+        </p>
+
+        <a href="#" class="btn performance__cta" data-magnetic data-reveal="up" data-reveal-delay="0.38">
+          <span class="btn__label" data-magnetic-label>Saiba mais</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </span>
+        </a>
+
+        <ul class="performance__features">
+          <li data-reveal="up" data-reveal-delay="0.44">
+            <span class="performance__feat-k">Amortecimento</span>
+            <span class="performance__feat-v">Responsivo</span>
+          </li>
+          <li data-reveal="up" data-reveal-delay="0.52">
+            <span class="performance__feat-k">Leveza</span>
+            <span class="performance__feat-v">Extrema</span>
+          </li>
+          <li data-reveal="up" data-reveal-delay="0.60">
+            <span class="performance__feat-k">Tração</span>
+            <span class="performance__feat-v">Superior</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ============================================================
+       SEÇÃO 3 — PRODUTOS
+       ============================================================ -->
+  <section class="products" id="products">
+    <div class="container">
+      <div class="products__head">
+        <span class="products__index" data-reveal="left">03</span>
+        <p class="products__eyebrow" data-reveal="left" data-reveal-delay="0.08">Coleção em destaque</p>
+        <h2 class="products__title" data-reveal="up" data-reveal-delay="0.16">Escolha<br />o seu.</h2>
+        <a href="#" class="btn btn--ghost products__all" data-magnetic data-reveal="right" data-reveal-delay="0.24">
+          <span class="btn__label" data-magnetic-label>Ver todos</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </span>
+        </a>
+      </div>
+
+      <div class="products__grid">
+
+        <article class="product" data-tilt>
+          <div class="product__inner">
+            <span class="product__glow" aria-hidden="true"></span>
+            <div class="product__media">
+              <img src="assets/tenis-hero.png" alt="Nike ZoomX Vaporfly" />
+            </div>
+            <div class="product__body">
+              <h3 class="product__name">Nike ZoomX Vaporfly</h3>
+              <p class="product__desc">Velocidade de elite para provas de rua e recordes pessoais.</p>
+              <div class="product__foot">
+                <span class="product__price">R$ 1.899</span>
+                <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike ZoomX Vaporfly">
+                  <span class="btn__label" data-magnetic-label>Comprar</span>
+                  <span class="btn__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product" data-tilt>
+          <div class="product__inner">
+            <span class="product__glow" aria-hidden="true"></span>
+            <div class="product__media">
+              <img src="assets/tenis-hero.png" alt="Nike Air Zoom Pegasus 41" />
+            </div>
+            <div class="product__body">
+              <h3 class="product__name">Nike Air Zoom Pegasus 41</h3>
+              <p class="product__desc">Amortecimento responsivo e versátil para o treino do dia a dia.</p>
+              <div class="product__foot">
+                <span class="product__price">R$ 899</span>
+                <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Air Zoom Pegasus 41">
+                  <span class="btn__label" data-magnetic-label>Comprar</span>
+                  <span class="btn__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="product" data-tilt>
+          <div class="product__inner">
+            <span class="product__glow" aria-hidden="true"></span>
+            <div class="product__media">
+              <img src="assets/tenis-hero.png" alt="Nike Invincible 3" />
+            </div>
+            <div class="product__body">
+              <h3 class="product__name">Nike Invincible 3</h3>
+              <p class="product__desc">Máximo retorno de energia e conforto para longas distâncias.</p>
+              <div class="product__foot">
+                <span class="product__price">R$ 1.199</span>
+                <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Invincible 3">
+                  <span class="btn__label" data-magnetic-label>Comprar</span>
+                  <span class="btn__icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Espaço extra só para poder rolar e testar a reversibilidade -->
+  <section class="spacer"></section>
+
+
+  <!-- ============================================================
+       MODAL DE VÍDEO (aberto pelo bloco "Assista ao filme" da Hero)
+       ============================================================ -->
+  <div class="modal" id="videoModal" role="dialog" aria-modal="true"
+       aria-label="Vídeo — Just Do It" aria-hidden="true">
+    <div class="modal__backdrop" data-modal-close></div>
+    <div class="modal__dialog">
+      <button class="modal__close" type="button" aria-label="Fechar vídeo" data-modal-close>
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <line x1="6" y1="6" x2="18" y2="18" /><line x1="18" y1="6" x2="6" y2="18" />
+        </svg>
+      </button>
+      <video class="modal__video" controls preload="none" playsinline>
+        <source src="assets/vide-hero.mp4" type="video/mp4" />
+      </video>
+    </div>
+  </div>
+
+
+  <!-- GSAP + ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
