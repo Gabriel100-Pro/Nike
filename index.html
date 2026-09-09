@@ -220,6 +220,32 @@
         </a>
       </div>
 
+      <!-- Estatísticas — contagem animada disparada pelo Intersection Observer -->
+      <div class="stats" data-stats>
+        <ul class="stats__grid">
+          <li class="stats__item">
+            <span class="stats__index">01</span>
+            <span class="stats__value" data-count-to="1000" data-count-suffix="+">1.000+</span>
+            <span class="stats__label">Tênis vendidos</span>
+          </li>
+          <li class="stats__item">
+            <span class="stats__index">02</span>
+            <span class="stats__value" data-count-to="100" data-count-suffix="+">100+</span>
+            <span class="stats__label">Cores disponíveis</span>
+          </li>
+          <li class="stats__item">
+            <span class="stats__index">03</span>
+            <span class="stats__value" data-count-to="300" data-count-suffix="+">300+</span>
+            <span class="stats__label">Modelos disponíveis</span>
+          </li>
+          <li class="stats__item">
+            <span class="stats__index">04</span>
+            <span class="stats__value" data-count-to="50000" data-count-suffix="+">50.000+</span>
+            <span class="stats__label">Atletas alcançados</span>
+          </li>
+        </ul>
+      </div>
+
       <div class="products__grid">
 
         <article class="product" data-tilt>
@@ -288,6 +314,50 @@
           </div>
         </article>
 
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SEÇÃO FINAL — NIKE APP
+       (mesma linguagem das seções anteriores: preto profundo, Anton,
+        acento volt só nos detalhes, divisor fino no topo)
+
+       Camadas do celular — cada wrapper tem UM único dono de transform,
+       igual à camada do tênis, para os efeitos não conflitarem:
+         .app__phone-enter    -> JS Intersection Observer (entrada pelo scroll)
+         .app__phone-parallax -> JS requestAnimationFrame (parallax do mouse)
+         .app__phone (img)    -> CSS keyframes (flutuação contínua)
+       ============================================================ -->
+  <section class="app" id="app">
+    <div class="app__bg" style="background-image:url('assets/img-fundo-ultima section.png')" aria-hidden="true"></div>
+    <div class="app__overlay" aria-hidden="true"></div>
+
+    <div class="container app__grid">
+      <div class="app__content">
+        <p class="app__eyebrow" data-reveal="left">Nike App</p>
+        <h2 class="app__title" data-reveal="up" data-reveal-delay="0.12">
+          Tudo da Nike<br />na palma da<br />sua mão.
+        </h2>
+        <p class="app__text" data-reveal="right" data-reveal-delay="0.22">
+          Encontre seus próximos tênis, acompanhe lançamentos e tenha uma
+          experiência feita para quem vive em movimento.
+        </p>
+        <a href="#" class="btn app__cta" data-magnetic data-reveal="up" data-reveal-delay="0.32">
+          <span class="btn__label" data-magnetic-label>Conheça o app</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </span>
+        </a>
+      </div>
+
+      <div class="app__visual">
+        <div class="app__phone-enter" data-phone-enter>
+          <div class="app__phone-parallax" data-phone-parallax>
+            <img class="app__phone" src="assets/img-celular.png"
+                 alt="Aplicativo da Nike em um smartphone" draggable="false" />
+          </div>
+        </div>
       </div>
     </div>
   </section>

@@ -11,6 +11,8 @@
      8. Botões magnéticos ([data-magnetic])
      9. Cursor customizado (desktop, discreto)
     10. Modal de vídeo ("Assista ao filme")
+    11. Estatísticas — contagem animada (Intersection Observer)
+    12. Celular da seção Nike App (entrada + flutuação + parallax)
 
    Todos os efeitos de mouse são desativados em telas <= 960px,
    ponteiro grosso (touch) e prefers-reduced-motion.
@@ -643,6 +645,158 @@
   }
 
   /* --------------------------------------------------------
+     11. ESTATÍSTICAS — CONTAGEM ANIMADA (Intersection Observer)
+         JavaScript puro. Dispara uma única vez, quando a área
+         entra no viewport. Entrada sutil dos indicadores
+         (opacity 0 -> 1, translateY 20px -> 0) + contagem 0 -> alvo
+         com easing suave (~1,8s).
+     -------------------------------------------------------- */
+  function initStatsCounter() {
+    const wrap = document.querySelector("[data-stats]");
+    if (!wrap) return;
+
+    const items = Array.prototype.slice.call(wrap.querySelectorAll(".stats__item"));
+    const values = Array.prototype.slice.call(wrap.querySelectorAll("[data-count-to]"));
+    const nf = new Intl.NumberFormat("pt-BR");
+
+    const finalText = (el) =>
+      nf.format(parseInt(el.dataset.countTo, 10)) + (el.dataset.countSuffix || "");
+
+    // Sem suporte a IO ou com reduced-motion: mostra o estado final direto.
+    if (prefersReduced || !("IntersectionObserver" in window)) {
+      values.forEach((el) => { el.textContent = finalText(el); });
+      return;
+    }
+
+    // Estado inicial da entrada — aplicado por JS (sem depender da classe .js).
+    items.forEach((el, i) => {
+      el.style.opacity = "0";
+      el.style.transform = "translateY(20px)";
+      el.style.transitionDelay = (i * 0.08).toFixed(2) + "s";
+    });
+    values.forEach((el) => { el.textContent = "0"; });
+
+    const DURATION = 1800;
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3); // suave, sem exagero
+
+    const countUp = (el) => {
+      const end = parseInt(el.dataset.countTo, 10);
+      const suffix = el.dataset.countSuffix || "";
+      const t0 = performance.now();
+
+      const step = (now) => {
+        const p = Math.min(1, (now - t0) / DURATION);
+        const current = Math.round(easeOut(p) * end);
+        el.textContent = nf.format(current) + (p >= 1 ? suffix : "");
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    };
+
+    const io = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          obs.unobserve(entry.target); // acontece somente uma vez
+          items.forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+          });
+          values.forEach(countUp);
+        });
+      },
+      { threshold: 0.4 }
+    );
+
+    io.observe(wrap);
+  }
+
+  /* --------------------------------------------------------
+     12. CELULAR DA SEÇÃO NIKE APP
+         a) Entrada pelo scroll (Intersection Observer) — uma vez.
+         b) Depois da entrada, libera a flutuação contínua (CSS).
+         c) Parallax do mouse (desktop) numa camada separada, para
+            não conflitar com a entrada nem com a flutuação.
+     -------------------------------------------------------- */
+  function initAppPhone() {
+    const enter = document.querySelector("[data-phone-enter]");
+    if (!enter) return;
+
+    /* ---- a/b) Entrada pelo scroll + flutuação ---- */
+    if (!prefersReduced && "IntersectionObserver" in window) {
+      enter.style.opacity = "0";
+      enter.style.transform = "translateY(80px) scale(0.85) rotateZ(-5deg)";
+      enter.style.transition =
+        "opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)";
+
+      const io = new IntersectionObserver(
+        (entries, obs) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            obs.unobserve(entry.target);
+            enter.style.opacity = "1";
+            enter.style.transform = "translateY(0) scale(1) rotateZ(0deg)";
+            enter.classList.add("is-in"); // libera a animação de flutuação
+          });
+        },
+        { threshold: 0.25 }
+      );
+      io.observe(enter);
+    } else {
+      enter.classList.add("is-in");
+    }
+
+    /* ---- c) Parallax do mouse (somente desktop) ---- */
+    if (isCoarsePointer || isMobile || prefersReduced) return;
+
+    const layer = enter.querySelector("[data-phone-parallax]");
+    const scene = document.getElementById("app");
+    if (!layer || !scene) return;
+
+    const target = { x: 0, y: 0 };
+    const current = { x: 0, y: 0 };
+    const EASE = 0.06;
+    const MAX = { x: 8, y: 8, rx: 3, ry: 4 }; // deslocamento/rotação bem pequenos
+    let running = false;
+
+    const onMove = (e) => {
+      const r = scene.getBoundingClientRect();
+      target.x = ((e.clientX - r.left) / r.width - 0.5) * 2;
+      target.y = ((e.clientY - r.top) / r.height - 0.5) * 2;
+      if (!running) {
+        running = true;
+        loop();
+      }
+    };
+
+    const onLeave = () => {
+      target.x = 0;
+      target.y = 0;
+    };
+
+    function loop() {
+      current.x += (target.x - current.x) * EASE;
+      current.y += (target.y - current.y) * EASE;
+
+      layer.style.transform =
+        `translate3d(${(current.x * MAX.x).toFixed(2)}px, ${(current.y * MAX.y).toFixed(2)}px, 0) ` +
+        `rotateX(${(current.y * -MAX.rx).toFixed(2)}deg) rotateY(${(current.x * MAX.ry).toFixed(2)}deg)`;
+
+      if (
+        Math.abs(target.x - current.x) > 0.0005 ||
+        Math.abs(target.y - current.y) > 0.0005
+      ) {
+        requestAnimationFrame(loop);
+      } else {
+        running = false;
+      }
+    }
+
+    scene.addEventListener("mousemove", onMove);
+    scene.addEventListener("mouseleave", onLeave);
+  }
+
+  /* --------------------------------------------------------
      BOOT
      -------------------------------------------------------- */
   function boot() {
@@ -656,6 +810,8 @@
     initMagnetic();
     initCursor();
     initVideoModal();
+    initStatsCounter();
+    initAppPhone();
 
     if (hasGSAP && window.ScrollTrigger) {
       // recalcula posições após o carregamento das imagens/fontes

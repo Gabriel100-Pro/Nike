@@ -9,8 +9,9 @@
      5. Camada do tênis (parallax + scroll)
      6. Hero
      7. Seção 2 — Performance
-     8. Responsivo
-     9. Acessibilidade / prefers-reduced-motion
+     8. Seção 3 — Produtos / Estatísticas / Seção final Nike App
+     9. Responsivo
+    10. Acessibilidade / prefers-reduced-motion
    ============================================================ */
 
 /* ---------- 1. Tokens / reset ---------- */
@@ -1031,6 +1032,170 @@ body.menu-open .nav__mobile li:nth-child(4) a { transition-delay: 0.26s; }
 .spacer { position: relative; z-index: 21; height: 90vh; background: var(--bg-soft); }
 
 
+/* ---------- 8d. Estatísticas (acima dos cards de produto) ---------- */
+.stats {
+  margin-bottom: clamp(52px, 9vh, 108px);
+  padding-top: clamp(30px, 5vh, 56px);
+  border-top: 1px solid var(--line-soft);
+}
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: clamp(20px, 3vw, 48px);
+}
+.stats__item {
+  min-width: 0;                       /* impede overflow do grid */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: clamp(20px, 2.6vw, 44px);
+  border-left: 1px solid var(--line-soft);   /* divisória muito sutil */
+  /* entrada sutil (opacity + translateY) — estado inicial aplicado por JS,
+     então sem JS / com reduced-motion tudo permanece visível */
+  transition: opacity 0.9s var(--ease-out), transform 0.9s var(--ease-out);
+}
+.stats__item:first-child { padding-left: 0; border-left: 0; }
+
+.stats__index {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  color: var(--volt);                 /* detalhe verde-limão */
+}
+.stats__value {
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  font-size: clamp(2.3rem, 4.6vw, 3.9rem);
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums; /* números não "dançam" na contagem */
+}
+.stats__label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+
+/* ---------- 8e. Seção final — Nike App ---------- */
+.app {
+  position: relative;
+  z-index: 21;                        /* opaca e acima da camada do tênis */
+  overflow: hidden;                   /* trava qualquer overflow horizontal */
+  padding: clamp(110px, 20vh, 240px) 0;
+  background: var(--bg);              /* fallback enquanto a imagem carrega */
+}
+/* divisor fino de topo — igual às seções 2 e 3 */
+.app::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent 60%);
+}
+
+.app__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+/* Escurecimento cinematográfico: prioriza o lado esquerdo (texto) e
+   aprofunda as bordas, mantendo o celular no respiro claro à direita. */
+.app__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(7, 7, 8, 0.94) 0%, rgba(7, 7, 8, 0.6) 42%, rgba(7, 7, 8, 0.12) 74%),
+    linear-gradient(0deg, rgba(7, 7, 8, 0.9) 0%, rgba(7, 7, 8, 0) 40%),
+    radial-gradient(120% 100% at 78% 48%, rgba(7, 7, 8, 0) 32%, rgba(7, 7, 8, 0.72) 100%);
+}
+
+.app__grid {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.02fr 0.98fr;
+  align-items: center;
+  gap: clamp(40px, 6vw, 110px);
+}
+
+.app__eyebrow {
+  margin: 0 0 clamp(1.4rem, 2.4vw, 2rem);
+  padding-left: 40px;
+  position: relative;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+.app__eyebrow::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 26px;
+  height: 1px;
+  background: var(--volt);
+}
+.app__title {
+  margin: 0;
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(2.7rem, 6.4vw, 5.4rem);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+}
+.app__text {
+  margin: clamp(1.6rem, 2.6vw, 2.2rem) 0 clamp(2.2rem, 3.4vw, 3rem);
+  max-width: 44ch;
+  font-size: 0.95rem;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+/* --- Celular: camadas de transform (perspectiva no contêiner) --- */
+.app__visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1200px;
+}
+.app__phone-enter {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+}
+.app__phone-parallax {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.app__phone {
+  width: min(78%, 420px);
+  height: auto;
+  filter: drop-shadow(0 50px 80px rgba(0, 0, 0, 0.6));
+  /* flutuação contínua — só roda depois da entrada (classe .is-in) */
+  animation: phoneFloat 8s var(--ease-io) infinite;
+  animation-play-state: paused;
+}
+.app__phone-enter.is-in .app__phone { animation-play-state: running; }
+
+/* Objeto premium flutuando: deslocamento e rotações mínimos, curva longa. */
+@keyframes phoneFloat {
+  0%   { transform: translateY(0)     scale(1)     rotateZ(-2deg) rotateY(0deg); }
+  50%  { transform: translateY(-15px) scale(1.015) rotateZ(2deg)  rotateY(3deg); }
+  100% { transform: translateY(0)     scale(1)     rotateZ(-2deg) rotateY(0deg); }
+}
+
+
 /* ---------- 8b. Reveal (entrada lateral / de baixo) ---------- */
 /* Estado inicial só quando o JS está ativo; o próprio JS aplica via GSAP.
    Sem JS ou com reduced-motion, tudo permanece visível. */
@@ -1132,6 +1297,9 @@ body.modal-open .cursor { display: none; }
   .hero__main { max-width: 74%; }
   .hero__watermark { font-size: 62vh; }
   .products__grid { grid-template-columns: repeat(2, 1fr); }
+
+  .app__grid { gap: clamp(32px, 5vw, 72px); }
+  .app__phone { width: min(84%, 360px); }
 }
 
 /* ---- Tablet ---- */
@@ -1168,6 +1336,21 @@ body.modal-open .cursor { display: none; }
     margin-bottom: clamp(40px, 7vh, 64px);
   }
   .products__all { justify-self: start; }
+
+  /* Estatísticas: 2 colunas, com divisórias reposicionadas */
+  .stats__grid { grid-template-columns: repeat(2, 1fr); gap: clamp(24px, 5vw, 40px); }
+  .stats__item:nth-child(2n+1) { padding-left: 0; border-left: 0; }
+  .stats__item:nth-child(n+3) {
+    padding-top: clamp(20px, 4vw, 28px);
+    border-top: 1px solid var(--line-soft);
+  }
+
+  /* Nike App: texto primeiro, celular abaixo e centralizado */
+  .app { padding: clamp(80px, 14vh, 150px) 0; }
+  .app__grid { grid-template-columns: 1fr; gap: clamp(36px, 8vw, 56px); }
+  .app__text { max-width: 52ch; }
+  .app__visual { width: 100%; }
+  .app__phone { width: min(56%, 300px); }
 }
 
 /* ---- Celular ---- */
@@ -1210,6 +1393,14 @@ body.modal-open .cursor { display: none; }
   .product__inner { padding: 14px; }
   .product__media { aspect-ratio: 16 / 11; }
   .product__body { padding: 22px 8px 8px; }
+
+  /* Estatísticas / Nike App no celular */
+  .stats { margin-bottom: clamp(40px, 7vh, 64px); }
+  .stats__grid { gap: 22px 20px; }
+  .stats__value { font-size: clamp(2rem, 9vw, 2.7rem); }
+
+  .app__title { font-size: clamp(2.4rem, 11vw, 3.4rem); }
+  .app__phone { width: min(68%, 250px); }
 }
 
 /* Ponteiro sem hover (touch): sem depender do mouse */
@@ -1253,4 +1444,10 @@ body.modal-open .cursor { display: none; }
   .js .hero__desc,
   .js .hero__cta,
   .js .shoe-intro { opacity: 1; }
+}
+
+/* A entrada do celular é armada pelo JS; sem JS ele já aparece.
+   Com reduced-motion o JS nem arma o estado inicial. */
+@media (prefers-reduced-motion: reduce) {
+  .app__phone { animation: none; }
 }
