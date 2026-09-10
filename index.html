@@ -30,9 +30,7 @@
     <div class="nav__inner">
       <!-- Logo -->
       <a href="#" class="nav__logo" aria-label="Nike — página inicial">
-        <svg class="nav__swoosh" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-          <path d="M24 7.2c-4 5-9.2 9.3-15 9.3-2.7 0-4-1.7-4-4.3 0-2.4 1-5 2-7-2.7 2.4-6 6.7-6 10.3 0 3 2 5 5.3 5C12.6 20.5 19.3 14.5 24 7.2z"/>
-        </svg>
+        <img class="nav__logo-img" src="assets/img-logo.png" alt="Nike" draggable="false" />
       </a>
 
       <!-- Links centralizados -->
@@ -208,19 +206,8 @@
        ============================================================ -->
   <section class="products" id="products">
     <div class="container">
-      <div class="products__head">
-        <span class="products__index" data-reveal="left">03</span>
-        <p class="products__eyebrow" data-reveal="left" data-reveal-delay="0.08">Coleção em destaque</p>
-        <h2 class="products__title" data-reveal="up" data-reveal-delay="0.16">Escolha<br />o seu.</h2>
-        <a href="#" class="btn btn--ghost products__all" data-magnetic data-reveal="right" data-reveal-delay="0.24">
-          <span class="btn__label" data-magnetic-label>Ver todos</span>
-          <span class="btn__icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-          </span>
-        </a>
-      </div>
-
-      <!-- Estatísticas — contagem animada disparada pelo Intersection Observer -->
+      <!-- Estatísticas — contagem animada disparada pelo Intersection Observer.
+           Reposicionadas ACIMA do bloco "Escolha o seu." (antes ficavam abaixo). -->
       <div class="stats" data-stats>
         <ul class="stats__grid">
           <li class="stats__item">
@@ -246,74 +233,217 @@
         </ul>
       </div>
 
-      <div class="products__grid">
+      <div class="products__head">
+        <span class="products__index" data-reveal="left">03</span>
+        <p class="products__eyebrow" data-reveal="left" data-reveal-delay="0.08">Coleção em destaque</p>
+        <h2 class="products__title" data-reveal="up" data-reveal-delay="0.16">Escolha<br />o seu.</h2>
+        <a href="#" class="btn btn--ghost products__all" data-magnetic data-reveal="right" data-reveal-delay="0.24">
+          <span class="btn__label" data-magnetic-label>Ver todos</span>
+          <span class="btn__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+          </span>
+        </a>
+      </div>
 
-        <article class="product" data-tilt>
-          <div class="product__inner">
-            <span class="product__glow" aria-hidden="true"></span>
-            <div class="product__media">
-              <img src="assets/tenis-hero.png" alt="Nike ZoomX Vaporfly" />
-            </div>
-            <div class="product__body">
-              <h3 class="product__name">Nike ZoomX Vaporfly</h3>
-              <p class="product__desc">Velocidade de elite para provas de rua e recordes pessoais.</p>
-              <div class="product__foot">
-                <span class="product__price">R$ 1.899</span>
-                <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike ZoomX Vaporfly">
-                  <span class="btn__label" data-magnetic-label>Comprar</span>
-                  <span class="btn__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-                  </span>
-                </button>
+      <!-- Carrossel: setas discretas nas laterais + trilho com deslize horizontal -->
+      <div class="products__carousel">
+        <button class="products__nav products__nav--prev" type="button"
+                aria-label="Ver produtos anteriores" aria-controls="productsTrack">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="15 4 7 12 15 20"/></svg>
+        </button>
+
+        <div class="products__grid" id="productsTrack" role="group" aria-label="Coleção em destaque — carrossel de produtos">
+
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike ZoomX Vaporfly" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike ZoomX Vaporfly</h3>
+                <p class="product__desc">Velocidade de elite para provas de rua e recordes pessoais.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 1.899</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike ZoomX Vaporfly">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
 
-        <article class="product" data-tilt>
-          <div class="product__inner">
-            <span class="product__glow" aria-hidden="true"></span>
-            <div class="product__media">
-              <img src="assets/tenis-hero.png" alt="Nike Air Zoom Pegasus 41" />
-            </div>
-            <div class="product__body">
-              <h3 class="product__name">Nike Air Zoom Pegasus 41</h3>
-              <p class="product__desc">Amortecimento responsivo e versátil para o treino do dia a dia.</p>
-              <div class="product__foot">
-                <span class="product__price">R$ 899</span>
-                <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Air Zoom Pegasus 41">
-                  <span class="btn__label" data-magnetic-label>Comprar</span>
-                  <span class="btn__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-                  </span>
-                </button>
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike Air Zoom Pegasus 41" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike Air Zoom Pegasus 41</h3>
+                <p class="product__desc">Amortecimento responsivo e versátil para o treino do dia a dia.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 899</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Air Zoom Pegasus 41">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
 
-        <article class="product" data-tilt>
-          <div class="product__inner">
-            <span class="product__glow" aria-hidden="true"></span>
-            <div class="product__media">
-              <img src="assets/tenis-hero.png" alt="Nike Invincible 3" />
-            </div>
-            <div class="product__body">
-              <h3 class="product__name">Nike Invincible 3</h3>
-              <p class="product__desc">Máximo retorno de energia e conforto para longas distâncias.</p>
-              <div class="product__foot">
-                <span class="product__price">R$ 1.199</span>
-                <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Invincible 3">
-                  <span class="btn__label" data-magnetic-label>Comprar</span>
-                  <span class="btn__icon" aria-hidden="true">
-                    <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
-                  </span>
-                </button>
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike Invincible 3" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike Invincible 3</h3>
+                <p class="product__desc">Máximo retorno de energia e conforto para longas distâncias.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 1.199</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Invincible 3">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
-        </article>
+          </article>
 
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike Alphafly 3" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike Alphafly 3</h3>
+                <p class="product__desc">Placa de carbono e espuma reativa para o ritmo de maratona.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 2.499</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Alphafly 3">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike Air Max Dn" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike Air Max Dn</h3>
+                <p class="product__desc">Sistema Dynamic Air de câmara dupla para uma pisada fluida.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 1.299</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Air Max Dn">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike Pegasus Trail 5" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike Pegasus Trail 5</h3>
+                <p class="product__desc">Tração agressiva e proteção para sair do asfalto sem perder o ritmo.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 1.099</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Pegasus Trail 5">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike InfinityRN 4" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike InfinityRN 4</h3>
+                <p class="product__desc">Base ampla e amortecimento macio para corridas mais constantes.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 1.049</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike InfinityRN 4">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <article class="product" data-tilt>
+            <div class="product__inner">
+              <span class="product__glow" aria-hidden="true"></span>
+              <div class="product__media">
+                <img class="product__logo" src="assets/img-logo.png" alt="" aria-hidden="true" />
+                <img src="assets/tenis-hero.png" alt="Nike Structure 25" />
+              </div>
+              <div class="product__body">
+                <h3 class="product__name">Nike Structure 25</h3>
+                <p class="product__desc">Estabilidade firme e suporte para quem busca segurança a cada passo.</p>
+                <div class="product__foot">
+                  <span class="product__price">R$ 799</span>
+                  <button class="btn btn--sm" data-magnetic aria-label="Comprar Nike Structure 25">
+                    <span class="btn__label" data-magnetic-label>Comprar</span>
+                    <span class="btn__icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24"><line x1="4" y1="12" x2="19" y2="12"/><polyline points="13 6 19 12 13 18"/></svg>
+                    </span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+
+        <button class="products__nav products__nav--next" type="button"
+                aria-label="Ver próximos produtos" aria-controls="productsTrack">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="9 4 17 12 9 20"/></svg>
+        </button>
       </div>
     </div>
   </section>
@@ -362,8 +492,101 @@
     </div>
   </section>
 
-  <!-- Espaço extra só para poder rolar e testar a reversibilidade -->
-  <section class="spacer"></section>
+  <!-- ============================================================
+       FOOTER
+       Mesma linguagem das seções: preto profundo, Anton no display,
+       acento volt só nos detalhes, divisor fino no topo.
+       ============================================================ -->
+  <footer class="footer" id="footer">
+    <div class="container footer__inner">
+
+      <!-- Parte 1 + 2 — marca à esquerda, colunas de links à direita -->
+      <div class="footer__top">
+        <div class="footer__brand">
+          <img class="footer__logo" src="assets/img-logo.png" alt="Nike" draggable="false" />
+          <p class="footer__tagline">Just<br />Do It.</p>
+        </div>
+
+        <nav class="footer__cols" aria-label="Links do rodapé">
+          <div class="footer__col">
+            <h3 class="footer__col-title">Produtos</h3>
+            <ul>
+              <li><a href="#">Masculino</a></li>
+              <li><a href="#">Feminino</a></li>
+              <li><a href="#">Lançamentos</a></li>
+              <li><a href="#">Coleções</a></li>
+              <li><a href="#">Ofertas</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h3 class="footer__col-title">Suporte</h3>
+            <ul>
+              <li><a href="#">Ajuda</a></li>
+              <li><a href="#">Entregas</a></li>
+              <li><a href="#">Trocas e devoluções</a></li>
+              <li><a href="#">Contato</a></li>
+            </ul>
+          </div>
+          <div class="footer__col">
+            <h3 class="footer__col-title">Nike</h3>
+            <ul>
+              <li><a href="#">Sobre a Nike</a></li>
+              <li><a href="#">Carreiras</a></li>
+              <li><a href="#">Sustentabilidade</a></li>
+              <li><a href="#">Notícias</a></li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Parte 3 — redes sociais -->
+      <ul class="footer__social">
+        <li>
+          <a href="#" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="3" y="3" width="18" height="18" rx="5.4" />
+              <circle cx="12" cy="12" r="4.1" />
+              <circle class="footer__social-dot" cx="17.2" cy="6.8" r="1.1" />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <rect x="2.5" y="5.5" width="19" height="13" rx="4" />
+              <path class="footer__social-fill" d="M10 9.2l5.2 2.8L10 14.8z" />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M14.5 8.3h2.1V5.2h-2.4c-2 0-3.4 1.4-3.4 3.6v2H8.4v3.1h2.4V21h3.2v-7.1h2.3l.5-3.1h-2.8V9c0-.5.3-.7.8-.7z"
+                    class="footer__social-fill" />
+            </svg>
+          </a>
+        </li>
+        <li>
+          <a href="#" aria-label="X">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4.5 4.5l15 15M19.5 4.5l-15 15" />
+            </svg>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Parte 4 — linha inferior -->
+      <div class="footer__bottom">
+        <span class="footer__copy">© 2026 Nike, Inc. Todos os direitos reservados.</span>
+        <ul class="footer__legal">
+          <li><a href="#">Privacidade</a></li>
+          <li><a href="#">Termos de uso</a></li>
+          <li><a href="#">Cookies</a></li>
+        </ul>
+      </div>
+
+    </div>
+  </footer>
 
 
   <!-- ============================================================

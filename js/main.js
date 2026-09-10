@@ -29,6 +29,11 @@
   const hasGSAP = typeof window.gsap !== "undefined";
   if (hasGSAP && window.ScrollTrigger) {
     gsap.registerPlugin(ScrollTrigger);
+    // Evita o refresh do ScrollTrigger quando a barra de endereço do mobile
+    // aparece/some (redimensionamento espúrio). Um refresh disparado enquanto a
+    // página está rolada dessincroniza as timelines com scrub (a Hero ficava
+    // presa em opacity/blur ao voltar ao topo).
+    ScrollTrigger.config({ ignoreMobileResize: true });
   }
 
   /* --------------------------------------------------------
@@ -264,11 +269,32 @@
           start: "top top",
           end: "bottom top",
           scrub: 1.1,
-          invalidateOnRefresh: true,
+          // SEM invalidateOnRefresh: estes valores são relativos à viewport
+          // (yPercent/scale/autoAlpha/filter) e não precisam ser remedidos.
+          // Com ele, um ScrollTrigger.refresh() disparado depois que o usuário
+          // já rolou (imagens/fontes pesadas terminam de carregar tarde) fazia
+          // o GSAP regravar o estado "inicial" a partir da Hero JÁ recuada,
+          // deixando os textos presos em opacity 0.1 + blur ao voltar ao topo.
         },
       });
-      if (grid) tlHero.to(grid, { yPercent: -14, autoAlpha: 0.1, filter: "blur(6px)" }, 0);
-      if (heroMedia) tlHero.to(heroMedia, { scale: 1.08, yPercent: 3 }, 0);
+      // fromTo com estados iniciais explícitos: ao voltar ao topo (progress 0)
+      // a Hero SEMPRE retorna a visível/nítida, quantas vezes forem necessárias.
+      if (grid) {
+        tlHero.fromTo(
+          grid,
+          { yPercent: 0, autoAlpha: 1, filter: "blur(0px)" },
+          { yPercent: -14, autoAlpha: 0.1, filter: "blur(6px)", immediateRender: false },
+          0
+        );
+      }
+      if (heroMedia) {
+        tlHero.fromTo(
+          heroMedia,
+          { scale: 1, yPercent: 0 },
+          { scale: 1.08, yPercent: 3, immediateRender: false },
+          0
+        );
+      }
     }
 
     /* ---- B) Viagem do tênis até a seção 2 ---- */
@@ -313,21 +339,29 @@
       };
     };
 
-    gsap.to(shoeScroll, {
-      x: () => travel().x,
-      y: () => travel().y,
-      rotation: isMobile ? 10 : 16,   // giro progressivo, suave, proporcional ao scroll
-      scaleX: () => -travel().scale,   // espelho horizontal:
-      scaleY: () => travel().scale,    //   traseira/superior -> ESQUERDA, ponta -> DIREITA
-      ease: "none",
-      scrollTrigger: {
-        trigger: "#performance",
-        start: "top bottom",          // começa assim que o usuário desce
-        end: "top top",               // 1 viewport inteira de scrub -> o tênis
-        scrub: 1,                     //   fica sempre visível, sem "sair da tela"
-        invalidateOnRefresh: true,
-      },
-    });
+    // fromTo com estado inicial explícito (posição da Hero). O invalidateOnRefresh
+    // continua recalculando travel() no resize, mas o "início" volta sempre a este
+    // estado explícito — nunca é regravado a partir do tênis já pousado na seção 2.
+    gsap.fromTo(
+      shoeScroll,
+      { x: 0, y: 0, rotation: 0, scaleX: 1, scaleY: 1 },
+      {
+        x: () => travel().x,
+        y: () => travel().y,
+        rotation: isMobile ? 10 : 16,   // giro progressivo, suave, proporcional ao scroll
+        scaleX: () => -travel().scale,   // espelho horizontal:
+        scaleY: () => travel().scale,    //   traseira/superior -> ESQUERDA, ponta -> DIREITA
+        ease: "none",
+        immediateRender: false,
+        scrollTrigger: {
+          trigger: "#performance",
+          start: "top bottom",          // começa assim que o usuário desce
+          end: "top top",               // 1 viewport inteira de scrub -> o tênis
+          scrub: 1,                     //   fica sempre visível, sem "sair da tela"
+          invalidateOnRefresh: true,
+        },
+      }
+    );
   }
 
   /* --------------------------------------------------------
@@ -401,13 +435,61 @@
       filter: "blur(9px)",        // blur -> sharp
       duration: 1.35,
       ease: "expo.out",           // desaceleração longa e elegante
-      stagger: 0.18,             // card 1 -> 2 -> 3, sequência clara
+      stagger: 0.1,              // sequência clara (stagger menor: mais cards no carrossel)
       scrollTrigger: {
         trigger: ".products__grid",
         start: "top 80%",
         toggleActions: "play none none reverse",
       },
     });
+  }
+
+  /* --------------------------------------------------------
+     6b. CARROSSEL DE PRODUTOS (setas laterais + deslize horizontal)
+         JavaScript puro. O trilho é um contêiner com overflow-x;
+         as setas apenas empurram o scroll com animação suave.
+         Swipe/trackpad continuam funcionando nativamente (mobile incluso).
+     -------------------------------------------------------- */
+  function initProductsCarousel() {
+    const track = document.getElementById("productsTrack");
+    const prev = document.querySelector(".products__nav--prev");
+    const next = document.querySelector(".products__nav--next");
+    if (!track || !prev || !next) return;
+
+    const behavior = prefersReduced ? "auto" : "smooth";
+
+    // Passo = largura de um card + gap, multiplicado pelos cards inteiros visíveis.
+    const pageDistance = () => {
+      const card = track.querySelector(".product");
+      if (!card) return track.clientWidth;
+      const cs = getComputedStyle(track);
+      const gap = parseFloat(cs.columnGap || cs.gap) || 24;
+      const cardW = card.getBoundingClientRect().width + gap;
+      const perView = Math.max(1, Math.round(track.clientWidth / cardW));
+      return cardW * perView;
+    };
+
+    // Habilita/desabilita as setas nos extremos do trilho.
+    const sync = () => {
+      const max = track.scrollWidth - track.clientWidth - 2;
+      prev.disabled = track.scrollLeft <= 2;
+      next.disabled = track.scrollLeft >= max;
+    };
+
+    prev.addEventListener("click", () => {
+      track.scrollBy({ left: -pageDistance(), behavior: behavior });
+    });
+    next.addEventListener("click", () => {
+      track.scrollBy({ left: pageDistance(), behavior: behavior });
+    });
+
+    track.addEventListener("scroll", sync, { passive: true });
+    window.addEventListener("resize", sync);
+    window.addEventListener("load", sync);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(sync);
+    }
+    sync();
   }
 
   /* --------------------------------------------------------
@@ -713,44 +795,56 @@
 
   /* --------------------------------------------------------
      12. CELULAR DA SEÇÃO NIKE APP
-         a) Entrada pelo scroll (Intersection Observer) — uma vez.
-         b) Depois da entrada, libera a flutuação contínua (CSS).
-         c) Parallax do mouse (desktop) numa camada separada, para
+         a) A SEÇÃO entra na viewport (Intersection Observer). A partir
+            desse instante — não do carregamento da página — conta-se
+            ~2s antes de o celular começar a aparecer.
+         b) Entrada premium: opacity 0 -> 1 e translateY(50px) scale(0.96)
+            -> posição normal, ~1,3s, easing suave. Acontece uma vez.
+         c) Ao terminar a entrada, libera a flutuação contínua (CSS).
+         d) Parallax do mouse (desktop) numa camada separada, para
             não conflitar com a entrada nem com a flutuação.
      -------------------------------------------------------- */
   function initAppPhone() {
     const enter = document.querySelector("[data-phone-enter]");
     if (!enter) return;
 
-    /* ---- a/b) Entrada pelo scroll + flutuação ---- */
-    if (!prefersReduced && "IntersectionObserver" in window) {
-      enter.style.opacity = "0";
-      enter.style.transform = "translateY(80px) scale(0.85) rotateZ(-5deg)";
-      enter.style.transition =
-        "opacity 1.1s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)";
+    const scene = document.getElementById("app");
 
+    /* ---- a/b/c) Delay ao entrar na seção + entrada + flutuação ---- */
+    if (!prefersReduced && "IntersectionObserver" in window) {
+      // Estado inicial: celular invisível e levemente deslocado/reduzido.
+      enter.style.opacity = "0";
+      enter.style.transform = "translateY(50px) scale(0.96)";
+      enter.style.transition =
+        "opacity 1.3s cubic-bezier(0.16, 1, 0.3, 1), transform 1.3s cubic-bezier(0.16, 1, 0.3, 1)";
+
+      const reveal = () => {
+        enter.style.opacity = "1";
+        enter.style.transform = "translateY(0) scale(1)";
+        enter.classList.add("is-in"); // libera a animação de flutuação (CSS)
+      };
+
+      // Observa a SEÇÃO: o cronômetro de ~2s só dispara quando ela
+      // realmente entra na viewport (e apenas uma vez).
       const io = new IntersectionObserver(
         (entries, obs) => {
           entries.forEach((entry) => {
             if (!entry.isIntersecting) return;
             obs.unobserve(entry.target);
-            enter.style.opacity = "1";
-            enter.style.transform = "translateY(0) scale(1) rotateZ(0deg)";
-            enter.classList.add("is-in"); // libera a animação de flutuação
+            window.setTimeout(reveal, 2000);
           });
         },
-        { threshold: 0.25 }
+        { threshold: 0.15 }
       );
-      io.observe(enter);
+      io.observe(scene || enter);
     } else {
       enter.classList.add("is-in");
     }
 
-    /* ---- c) Parallax do mouse (somente desktop) ---- */
+    /* ---- d) Parallax do mouse (somente desktop) ---- */
     if (isCoarsePointer || isMobile || prefersReduced) return;
 
     const layer = enter.querySelector("[data-phone-parallax]");
-    const scene = document.getElementById("app");
     if (!layer || !scene) return;
 
     const target = { x: 0, y: 0 };
@@ -806,6 +900,7 @@
     initShoeScroll();
     initReveals();
     initProductsEntrance();
+    initProductsCarousel();
     initProductTilt();
     initMagnetic();
     initCursor();
@@ -814,11 +909,43 @@
     initAppPhone();
 
     if (hasGSAP && window.ScrollTrigger) {
-      // recalcula posições após o carregamento das imagens/fontes
-      window.addEventListener("load", () => ScrollTrigger.refresh());
+      // Recalcula posições após o carregamento de imagens/fontes — MAS só quando
+      // a página está no topo. Um ScrollTrigger.refresh() disparado enquanto o
+      // usuário já rolou (imagens pesadas terminam de carregar tarde) deixa as
+      // timelines com scrub travadas: ao voltar ao topo a Hero não reaparecia.
+      // Se houver rolagem no momento, o refresh fica pendente e roda assim que
+      // o usuário retorna ao topo — garantindo a Hero sempre reinicializada.
+      let pendingRefresh = false;
+      const safeRefresh = () => {
+        if (window.scrollY > 4) {
+          pendingRefresh = true;
+          return;
+        }
+        ScrollTrigger.refresh();
+      };
+      window.addEventListener("load", safeRefresh);
       if (document.fonts && document.fonts.ready) {
-        document.fonts.ready.then(() => ScrollTrigger.refresh());
+        document.fonts.ready.then(safeRefresh);
       }
+
+      // Qualquer refresh que ocorra com a página rolada (ex.: resize de janela,
+      // rotação, imagens carregando tarde) pode deixar as timelines com scrub
+      // dessincronizadas. Marcamos para refazer o refresh — que é sempre seguro
+      // quando executado no topo — assim que o usuário retornar ao topo.
+      ScrollTrigger.addEventListener("refresh", () => {
+        if (window.scrollY > 4) pendingRefresh = true;
+      });
+
+      window.addEventListener(
+        "scroll",
+        () => {
+          if (pendingRefresh && window.scrollY <= 4) {
+            pendingRefresh = false;
+            ScrollTrigger.refresh();
+          }
+        },
+        { passive: true }
+      );
     }
   }
 

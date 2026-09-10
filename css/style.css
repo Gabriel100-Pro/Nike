@@ -221,13 +221,15 @@ body.cursor-active .cursor__dot { opacity: 0; }
 }
 
 .nav__logo { justify-self: start; display: inline-flex; }
-.nav__swoosh {
-  width: 62px;
+/* Logo Nike (assets/img-logo.png): swoosh preto sobre transparente ->
+   invertido para branco, acompanhando a paleta escura do site. */
+.nav__logo-img {
+  width: clamp(52px, 5vw, 64px);
   height: auto;
-  fill: var(--text);
+  filter: invert(1);
   transition: transform 0.4s var(--ease-out);
 }
-.nav__logo:hover .nav__swoosh { transform: scale(1.06); }
+.nav__logo:hover .nav__logo-img { transform: scale(1.06); }
 
 .nav__links {
   justify-self: center;
@@ -915,10 +917,86 @@ body.menu-open .nav__mobile li:nth-child(4) a { transition-delay: 0.26s; }
 }
 .products__all { grid-area: all; align-self: center; }
 
+/* --- Carrossel: trilho horizontal + setas discretas nas laterais --- */
+.products__carousel {
+  position: relative;
+  /* faixas laterais reservadas para as setas — elas nunca cobrem os cards */
+  padding-inline: clamp(40px, 5.5vw, 74px);
+}
+
 .products__grid {
+  --pv: 3;                              /* cards visíveis no desktop */
+  --pgap: clamp(18px, 2vw, 30px);
+  display: flex;
+  gap: var(--pgap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x proximity;
+  scroll-behavior: smooth;
+  scrollbar-width: none;               /* Firefox */
+  -ms-overflow-style: none;            /* IE/Edge legado */
+  /* folga vertical p/ a animação de entrada (y:64) e o tilt 3D dos cards
+     não serem recortados pelo overflow do trilho; as margens negativas
+     cancelam o efeito no layout (menor no topo, p/ não invadir o cabeçalho). */
+  padding: 22px 0 70px;
+  margin: -22px 0 -70px;
+}
+.products__grid::-webkit-scrollbar { display: none; }
+
+.products__grid > .product {
+  flex: 0 0 calc((100% - (var(--pv) - 1) * var(--pgap)) / var(--pv));
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+/* Setas — minimalistas, integradas: fio fino, fundo translúcido, acento volt no hover */
+.products__nav {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  margin-block: auto;
+  z-index: 6;
+  width: clamp(34px, 4vw, 46px);
+  height: clamp(34px, 4vw, 46px);
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: clamp(18px, 2vw, 30px);
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background: rgba(10, 10, 12, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text);
+  transition: background 0.35s var(--ease-out), border-color 0.35s var(--ease-out),
+              color 0.35s var(--ease-out), opacity 0.35s var(--ease-out),
+              transform 0.35s var(--ease-out);
+}
+.products__nav svg {
+  width: 42%;
+  height: 42%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.products__nav--prev { left: 0; }
+.products__nav--next { right: 0; }
+.products__nav:hover {
+  border-color: rgba(212, 247, 10, 0.5);
+  color: var(--volt);
+  background: rgba(10, 10, 12, 0.7);
+}
+.products__nav:active { transform: scale(0.92); }
+.products__nav:focus-visible {
+  outline: 2px solid var(--volt);
+  outline-offset: 3px;
+}
+.products__nav:disabled {
+  opacity: 0.22;
+  pointer-events: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .products__grid { scroll-behavior: auto; }
 }
 
 /* --- Card --- */
@@ -990,6 +1068,27 @@ body.menu-open .nav__mobile li:nth-child(4) a { transition-delay: 0.26s; }
 }
 .product.is-hover .product__media img { transform: scale(1.06); }
 
+/* Logo Nike no card — swoosh discreto no canto superior esquerdo da mídia.
+   (Seletor com 2 classes p/ vencer a regra genérica ".product__media img".) */
+.product__media .product__logo {
+  position: absolute;
+  top: 14px;
+  left: 16px;
+  width: clamp(32px, 3.4vw, 44px);
+  height: auto;
+  padding: 0;
+  object-fit: contain;
+  filter: invert(1) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.4));
+  opacity: 0.82;
+  transform: none;
+  transition: opacity 0.5s var(--ease-out);
+  z-index: 4;
+}
+.product.is-hover .product__media .product__logo {
+  opacity: 1;
+  transform: none;                 /* neutraliza o scale herdado do hover da mídia */
+}
+
 .product__body {
   display: flex;
   flex-direction: column;
@@ -1029,7 +1128,141 @@ body.menu-open .nav__mobile li:nth-child(4) a { transition-delay: 0.26s; }
 .product__name,
 .product__desc { transition: transform 0.5s var(--ease-out); }
 
-.spacer { position: relative; z-index: 21; height: 90vh; background: var(--bg-soft); }
+
+/* ---------- 8f. Footer ---------- */
+.footer {
+  position: relative;
+  z-index: 21;
+  background: var(--bg);
+  padding: clamp(64px, 12vh, 128px) 0 clamp(26px, 5vh, 44px);
+  overflow: hidden;
+}
+/* divisor fino de topo — mesma assinatura das seções 2, 3 e Nike App */
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: linear-gradient(90deg, var(--line), transparent 60%);
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 1.15fr 2fr;
+  gap: clamp(40px, 7vw, 128px);
+  align-items: start;
+}
+
+/* Parte 1 — logo + frase */
+.footer__brand { display: flex; flex-direction: column; gap: clamp(20px, 3vw, 32px); }
+.footer__logo {
+  width: clamp(66px, 8vw, 92px);
+  height: auto;
+  filter: invert(1);
+}
+.footer__tagline {
+  margin: 0;
+  font-family: "Anton", sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  font-size: clamp(2.4rem, 4.6vw, 3.6rem);
+  line-height: 0.86;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+/* Parte 2 — colunas de links */
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(24px, 4vw, 56px);
+}
+.footer__col-title {
+  margin: 0 0 clamp(14px, 2vw, 22px);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--volt);
+}
+.footer__col ul { display: flex; flex-direction: column; gap: 12px; }
+.footer__col a {
+  display: inline-block;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  color: var(--muted);
+  transition: color 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+}
+.footer__col a:hover,
+.footer__col a:focus-visible {
+  color: var(--text);
+  transform: translateX(4px);
+}
+
+/* Parte 3 — redes sociais */
+.footer__social {
+  display: flex;
+  gap: 14px;
+  margin-top: clamp(44px, 7vw, 84px);
+}
+.footer__social a {
+  --s: 42px;
+  width: var(--s);
+  height: var(--s);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  transition: color 0.35s var(--ease-out), border-color 0.35s var(--ease-out),
+              background 0.35s var(--ease-out), transform 0.35s var(--ease-out);
+}
+.footer__social svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.footer__social .footer__social-fill { fill: currentColor; stroke: none; }
+.footer__social .footer__social-dot { fill: currentColor; stroke: none; }
+.footer__social a:hover,
+.footer__social a:focus-visible {
+  color: var(--text);
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.06);
+  transform: translateY(-3px);
+}
+
+/* Parte 4 — linha inferior */
+.footer__bottom {
+  margin-top: clamp(40px, 6vw, 72px);
+  padding-top: clamp(20px, 3vw, 30px);
+  border-top: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px 32px;
+  flex-wrap: wrap;
+}
+.footer__copy {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+}
+.footer__legal { display: flex; flex-wrap: wrap; gap: 10px 26px; }
+.footer__legal a {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  transition: color 0.35s var(--ease-out);
+}
+.footer__legal a:hover,
+.footer__legal a:focus-visible { color: var(--text); }
 
 
 /* ---------- 8d. Estatísticas (acima dos cards de produto) ---------- */
@@ -1151,11 +1384,11 @@ body.menu-open .nav__mobile li:nth-child(4) a { transition-delay: 0.26s; }
   font-weight: 400;
   text-transform: uppercase;
   font-size: clamp(2.7rem, 6.4vw, 5.4rem);
-  line-height: 0.86;
+  line-height: 1.06;            /* mais respiro entre as linhas do h2 */
   letter-spacing: -0.01em;
 }
 .app__text {
-  margin: clamp(1.6rem, 2.6vw, 2.2rem) 0 clamp(2.2rem, 3.4vw, 3rem);
+  margin: clamp(2rem, 3.2vw, 3rem) 0 clamp(2.2rem, 3.4vw, 3rem);
   max-width: 44ch;
   font-size: 0.95rem;
   line-height: 1.75;
@@ -1182,17 +1415,30 @@ body.menu-open .nav__mobile li:nth-child(4) a { transition-delay: 0.26s; }
   width: min(78%, 420px);
   height: auto;
   filter: drop-shadow(0 50px 80px rgba(0, 0, 0, 0.6));
-  /* flutuação contínua — só roda depois da entrada (classe .is-in) */
-  animation: phoneFloat 8s var(--ease-io) infinite;
+  /* flutuação contínua e cinematográfica — só roda depois da entrada (.is-in) */
+  animation: phoneFloat 5s ease-in-out infinite;
   animation-play-state: paused;
 }
 .app__phone-enter.is-in .app__phone { animation-play-state: running; }
 
-/* Objeto premium flutuando: deslocamento e rotações mínimos, curva longa. */
+/* Objeto premium realmente flutuando no ar: sobe/desce ~22px, leve deriva
+   lateral (~6px) e rotação suave (~2,5°). Curva longa, contínua, loop infinito. */
 @keyframes phoneFloat {
-  0%   { transform: translateY(0)     scale(1)     rotateZ(-2deg) rotateY(0deg); }
-  50%  { transform: translateY(-15px) scale(1.015) rotateZ(2deg)  rotateY(3deg); }
-  100% { transform: translateY(0)     scale(1)     rotateZ(-2deg) rotateY(0deg); }
+  0%   { transform: translateY(0)     translateX(-6px) scale(1)    rotateZ(-2.5deg) rotateY(-2deg); }
+  25%  { transform: translateY(-14px) translateX(2px)  scale(1.01) rotateZ(0deg)    rotateY(1deg); }
+  50%  { transform: translateY(-22px) translateX(6px)  scale(1.02) rotateZ(2.5deg)  rotateY(3deg); }
+  75%  { transform: translateY(-10px) translateX(1px)  scale(1.01) rotateZ(1deg)    rotateY(1deg); }
+  100% { transform: translateY(0)     translateX(-6px) scale(1)    rotateZ(-2.5deg) rotateY(-2deg); }
+}
+
+/* Mobile: mesma linguagem de movimento, porém com amplitude reduzida para
+   o celular nunca sair da área visível da tela. */
+@keyframes phoneFloatSm {
+  0%   { transform: translateY(0)     translateX(-3px) scale(1)     rotateZ(-1.5deg); }
+  25%  { transform: translateY(-8px)  translateX(1px)  scale(1.006) rotateZ(0deg); }
+  50%  { transform: translateY(-13px) translateX(3px)  scale(1.012) rotateZ(1.5deg); }
+  75%  { transform: translateY(-6px)  translateX(1px)  scale(1.006) rotateZ(0.6deg); }
+  100% { transform: translateY(0)     translateX(-3px) scale(1)     rotateZ(-1.5deg); }
 }
 
 
@@ -1296,7 +1542,7 @@ body.modal-open .cursor { display: none; }
 @media (max-width: 1200px) {
   .hero__main { max-width: 74%; }
   .hero__watermark { font-size: 62vh; }
-  .products__grid { grid-template-columns: repeat(2, 1fr); }
+  .products__grid { --pv: 2; }         /* 2 cards visíveis no carrossel */
 
   .app__grid { gap: clamp(32px, 5vw, 72px); }
   .app__phone { width: min(84%, 360px); }
@@ -1350,7 +1596,16 @@ body.modal-open .cursor { display: none; }
   .app__grid { grid-template-columns: 1fr; gap: clamp(36px, 8vw, 56px); }
   .app__text { max-width: 52ch; }
   .app__visual { width: 100%; }
-  .app__phone { width: min(56%, 300px); }
+  .app__phone {
+    width: min(56%, 300px);
+    /* amplitude de flutuação reduzida no mobile */
+    animation-name: phoneFloatSm;
+    animation-duration: 5.5s;
+  }
+
+  /* Footer: marca acima, colunas abaixo */
+  .footer__top { grid-template-columns: 1fr; gap: clamp(36px, 8vw, 56px); }
+  .footer__tagline { font-size: clamp(2.2rem, 8vw, 3rem); }
 }
 
 /* ---- Celular ---- */
@@ -1388,11 +1643,13 @@ body.modal-open .cursor { display: none; }
   .performance__features { gap: 20px 32px; }
   .performance__features li { min-width: 40%; }
 
-  /* Produtos: coluna única, card mais compacto */
-  .products__grid { grid-template-columns: 1fr; gap: 16px; }
+  /* Produtos: carrossel com ~1 card por vez (o próximo aparece pela borda) */
+  .products__carousel { padding-inline: 40px; }
+  .products__grid { --pv: 1.12; --pgap: 14px; }
   .product__inner { padding: 14px; }
   .product__media { aspect-ratio: 16 / 11; }
   .product__body { padding: 22px 8px 8px; }
+  .products__nav { width: 36px; height: 36px; }
 
   /* Estatísticas / Nike App no celular */
   .stats { margin-bottom: clamp(40px, 7vh, 64px); }
@@ -1401,6 +1658,15 @@ body.modal-open .cursor { display: none; }
 
   .app__title { font-size: clamp(2.4rem, 11vw, 3.4rem); }
   .app__phone { width: min(68%, 250px); }
+
+  /* Footer: colunas reorganizadas verticalmente, bom espaçamento */
+  .footer__cols { grid-template-columns: repeat(2, 1fr); gap: 30px 24px; }
+  .footer__bottom { justify-content: flex-start; gap: 14px 24px; }
+}
+
+/* ---- Celular estreito ---- */
+@media (max-width: 400px) {
+  .footer__cols { grid-template-columns: 1fr; gap: 26px; }
 }
 
 /* Ponteiro sem hover (touch): sem depender do mouse */
